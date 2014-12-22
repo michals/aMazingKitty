@@ -77,8 +77,10 @@ class MazeStats {
   final int shortests;
   final int picked;
   final int longest;
+  final int options;
   final Bridge bridge;
-  MazeStats(this.shortests, this.picked, this.longest, this.bridge);
+  MazeStats(this.shortests, this.picked, this.longest, this.options, this.bridge);
+  String toString() => "MazeStats{shortests: $shortests, picked: $picked, max: $longest, options: $options}";
 }
 
 class Digger {
@@ -243,7 +245,48 @@ class Maze {
   }
 
   MazeStats _bridge(double difficulty) {
-    return null; // TODO: implement
+    if (difficulty < 0 || difficulty >= 1) {
+      throw "difficulty must be in range (0.0 .. 1.0]";
+    }
+    // list of bridges between outer digger paths and inner digger paths
+    // each bridge is a start point with direction property
+    List<Bridge> bridges = new List();
+
+    // true iff one owner is inner digger and other is outer digger
+    // inner digger ids assumed to be: 1,2,...
+    // outer digger ids assumed to be: 11,12,...
+    bool inOut(int owner1, int owner2) => (owner1 - owner2).abs() > 4;
+
+    int owner; // aka digger id
+    // find all possible bridges
+    // (adjacent rooms with different owner/digger ids)
+    for ( var y = 0; y < rows; y++) {
+        for ( var x = 0; x < cols; x++) {
+            owner = getOwner(x, y);
+            if (x < cols - 1 && inOut(owner, getOwner(x + 1, y))) {
+                bridges.add(new Bridge(x, y, 1 + getDist(x, y) + getDist(x + 1, y), Dir.RIGHT));
+            }
+            if (y < rows - 1 && inOut(owner, getOwner(x, y + 1))) {
+                bridges.add(new Bridge(x, y, 1 + getDist(x, y) + getDist(x, y + 1), Dir.DOWN));
+            }
+        }
+    }
+    // sort bridges by path length (shortest first)
+    bridges.sort((a, b) => a.length - b.length);
+    Bridge bridge;
+    // in case one digger did all maze
+    if (!bridges.isEmpty) {
+      bridge = bridges[(bridges.length * difficulty).toInt()];
+      openDoor(bridge, bridge.direction, 0);
+      openDoor(bridge.on(bridge.direction), Dir.opposite(bridge.direction), 0);
+    }
+
+    // find path to correct end
+    path = findPath(start, ends);
+    // remember correct end
+    end = path[path.length - 1];
+
+    return new MazeStats(bridges[0].length, bridge.length, bridges.last.length, bridges.length, bridge);
   }
 
   void buildCenter(double difficulty) {
@@ -251,9 +294,6 @@ class Maze {
   }
 
   MazeStats buildDiagonal(double difficulty) {
-    if (difficulty < 0 || difficulty >= 1) {
-      throw "difficulty must be in range (0.0 .. 1.0]";
-    }
     start = new Room(0, 0);
     end = new Room(cols - 1, rows - 1);
     ends = [end];
@@ -267,7 +307,7 @@ class Maze {
   }
 
   List<Room> findPath(Room from, List<Room> destinations) {
-    throw "not implemented"; // TODO: implement
+    return [from, destinations[0]]; // TODO: real implementation
   }
 
 }
