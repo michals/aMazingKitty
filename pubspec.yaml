@@ -1,0 +1,7 @@
+name: aMazingKitty
+version: 0.0.1
+description: Help Kitty solve the maze and find cup of milk.
+environment:
+  sdk: '>=1.0.0 <2.0.0'
+dependencies:
+  browser: any
