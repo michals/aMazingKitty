@@ -310,6 +310,7 @@ class Maze {
   Iterable<Room> findPath(Room from, List<Room> destinations) {
     // nodes yet to be inspected
     Queue<Room> inspect = new Queue();
+    inspect.add(from);
 
     // which direction to go from room to get to [from]
     Uint8List parentDir = new Uint8List(cols * rows);
