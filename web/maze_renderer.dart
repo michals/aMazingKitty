@@ -37,7 +37,7 @@ class MazeRenderer {
   Future loadSprites(String spriteUrl, int size) {
     img = new ImageElement();
     this.size = size;
-    for (int i=0; i<sprites.length; i++) {
+    for (int i = 0; i < sprites.length; i++) {
       sprites[i] = new Point(_spriteX[i] * size, _spriteY[i] * size);
     }
     var ret = img.onLoad.first;

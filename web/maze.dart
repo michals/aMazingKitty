@@ -2,6 +2,7 @@ library maze;
 
 import 'dart:typed_data';
 import 'dart:math';
+import 'dart:collection';
 
 class _Rnd {
   static Random random = new Random();
@@ -123,7 +124,7 @@ class Digger {
     }
     return dirs;
   }
-  
+
   /** find next starting room. Retirn null if none */
   Room nextStart() {
     Room room;
@@ -135,7 +136,7 @@ class Digger {
     }
     return null;
   }
-  
+
   void digg(int maxSteps) {
     int dirs;
     int dir;
@@ -185,7 +186,7 @@ class Maze {
 
   /** distance to the digger starting point */
   Uint8List _dist;
-  
+
   List<Room> path;
 
   Maze(this.cols, this.rows) {
@@ -260,16 +261,16 @@ class Maze {
     int owner; // aka digger id
     // find all possible bridges
     // (adjacent rooms with different owner/digger ids)
-    for ( var y = 0; y < rows; y++) {
-        for ( var x = 0; x < cols; x++) {
-            owner = getOwner(x, y);
-            if (x < cols - 1 && inOut(owner, getOwner(x + 1, y))) {
-                bridges.add(new Bridge(x, y, 1 + getDist(x, y) + getDist(x + 1, y), Dir.RIGHT));
-            }
-            if (y < rows - 1 && inOut(owner, getOwner(x, y + 1))) {
-                bridges.add(new Bridge(x, y, 1 + getDist(x, y) + getDist(x, y + 1), Dir.DOWN));
-            }
+    for (var y = 0; y < rows; y++) {
+      for (var x = 0; x < cols; x++) {
+        owner = getOwner(x, y);
+        if (x < cols - 1 && inOut(owner, getOwner(x + 1, y))) {
+          bridges.add(new Bridge(x, y, 1 + getDist(x, y) + getDist(x + 1, y), Dir.RIGHT));
         }
+        if (y < rows - 1 && inOut(owner, getOwner(x, y + 1))) {
+          bridges.add(new Bridge(x, y, 1 + getDist(x, y) + getDist(x, y + 1), Dir.DOWN));
+        }
+      }
     }
     // sort bridges by path length (shortest first)
     bridges.sort((a, b) => a.length - b.length);
@@ -306,9 +307,41 @@ class Maze {
     return _bridge(difficulty);
   }
 
-  List<Room> findPath(Room from, List<Room> destinations) {
-    return [from, destinations[0]]; // TODO: real implementation
+  Iterable<Room> findPath(Room from, List<Room> destinations) {
+    // nodes yet to be inspected
+    Queue<Room> inspect = new Queue();
+
+    // which direction to go from room to get to [from]
+    Uint8List parentDir = new Uint8List(cols * rows);
+
+    // for each point to inspect
+    while (!inspect.isEmpty) {
+      Room current = inspect.removeLast();
+      if (destinations.contains(current)) {
+        // found destination, lets build a path based on parentDir
+        Queue<Room> path = new Queue();
+        path.addLast(current);
+        while (current != from) {
+          current = current.on(parentDir[_xy(current.x, current.y)]);
+          path.addFirst(current);
+        }
+        return path;
+      }
+      for (int dir in Dir.allAsList) {
+        // if door is open
+        if (isRoomOpen(current, dir)) {
+          Room adjacent = current.on(dir);
+          // and if adjacent room was not visited
+          if (parentDir[_xy(adjacent.x, adjacent.y)] == 0) {
+            // mark visited by setting direction to [from]
+            parentDir[_xy(adjacent.x, adjacent.y)] = Dir.opposite(dir);
+            // schedule for further direction
+            inspect.add(current);
+          }
+        }
+      }
+    }
+    return [from]; // impossible, but we don't want the warning
   }
 
 }
-
