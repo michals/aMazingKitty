@@ -33,10 +33,12 @@
 </head>
 
 <body>
-  <div>
-    <canvas id="maze" width="800" height="600"></canvas>
+  <div id="maze">
+    <canvas width="800" height="600" tabindex="-1"></canvas>
+    <div id="goal" style="display: none"></div>
+    <div id="player" style="display: none"></div>
   </div>
-  <input type="button" id="newGame" value="New Game"/>
+  <input type="button" id="newGame" value="New Game" />
 
   <script type="application/dart" src="main.dart"></script>
   <script src="packages/browser/dart.js"></script>
