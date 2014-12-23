@@ -190,15 +190,21 @@ class Maze {
   List<Room> path;
 
   Maze(this.cols, this.rows) {
-    visited = 0;
     ends = [];
     path = [];
     _data = new Uint8List(cols * rows);
     _owner = new Uint8List(cols * rows);
     _dist = new Uint8List(cols * rows);
-    for (int i = 0; i < _data.length; i++) {
-      _data[i] = Dir.allAsBitmap;
-    }
+    reset();
+  }
+
+  void reset() {
+    visited = 0;
+    ends.clear();
+    path.clear();
+    _data.fillRange(0, _data.length, Dir.allAsBitmap);
+    _owner.fillRange(0, _data.length, 0);
+    _dist.fillRange(0, _data.length, 0);
   }
 
   int _xy(int x, int y) {

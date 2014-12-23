@@ -125,11 +125,27 @@ audio,canvas,progress,video {
   vertical-align: baseline
 }
 
-audio:not ([controls] ){
-  display: none;
-  height: 0
-}
+audio
+:not
+ 
+(
+[
+controls
+]
+ 
+){
+display
+:
+ 
+none
+;
 
+  
+height
+:
+ 
+0
+}
 [hidden],template {
   display: none
 }
@@ -178,10 +194,20 @@ img {
   border: 0
 }
 
-svg:not (:root ){
-  overflow: hidden
-}
+svg
+:not
+ 
+(
+:root
+ 
+){
+overflow
+:
+ 
+hidden
 
+
+}
 figure {
   margin: 0
 }
@@ -2088,7 +2114,7 @@ ol>li::before {
   left: 0
 }
 
-ol>li:nth-child(10n)  ~ li::before,ol>li:nth-child(10n)::before {
+ol>li:nth-child(10n)   ~ li::before,ol>li:nth-child(10n)::before {
   content: counter(list)
 }
 
@@ -2156,7 +2182,7 @@ ol.list-links li a::before {
   left: 0
 }
 
-ol.list-links li:nth-child(10n)  ~ li a::before,ol.list-links li:nth-child(10n) a::before
+ol.list-links li:nth-child(10n)   ~ li a::before,ol.list-links li:nth-child(10n) a::before
   {
   content: counter(list)
 }
@@ -3351,7 +3377,7 @@ body.open {
   margin: 0 auto
 }
 
-.app-bar.open,.app-bar.open  ~ main {
+.app-bar.open,.app-bar.open   ~ main {
   -webkit-transform: translate(250px, 0);
   transform: translate(250px, 0)
 }
@@ -3511,7 +3537,7 @@ main {
   .app-bar {
     position: relative
   }
-  .app-bar.open,.app-bar.open  ~ main {
+  .app-bar.open,.app-bar.open   ~ main {
     -webkit-transform: translate(0px, 0);
     transform: translate(0px, 0)
   }
