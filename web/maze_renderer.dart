@@ -50,10 +50,10 @@ class MazeRenderer {
 
   MazeRenderer(this.canvas) {
     ctx = canvas.context2D;
-    player_type = PLAYER_CAT;
+//    player_type = PLAYER_CAT;
 //    player_type = PLAYER_DOG;
 //    player_type = PLAYER_MOUSE;
-//    player_type = PLAYER_MONEKY;
+    player_type = PLAYER_MONEKY;
     canvasOffset = canvas.offset;
   }
 

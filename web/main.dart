@@ -10,7 +10,7 @@ int playerX;
 int playerY;
 
 void main() {
-  maze = new Maze(10, 7);
+  maze = new Maze(8, 6);
   canvas = querySelector("#maze canvas");
   Element newGame = querySelector("#newGame");
   renderer = new MazeRenderer(canvas);
@@ -67,5 +67,8 @@ void keyDown(KeyboardEvent event) {
       }
       event.preventDefault();
       break;
+  }
+  if (playerX == maze.cols-1 && playerY == maze.rows-1) {
+    querySelector('#player').classes.toggle("happy");
   }
 }
