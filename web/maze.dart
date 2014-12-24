@@ -242,6 +242,11 @@ class Maze {
     return getValue(room.x, room.y) & direction == 0;
   }
 
+  bool isRoomOpenXY(int x, int y, int direction) {
+    // set direction bit mean door closed
+    return _data[_xy(x, y)] & direction == 0;
+  }
+
   void openDoor(Room room, int direction, int owner) {
     int oldVal = getValue(room.x, room.y);
     if (oldVal == Dir.allAsBitmap) { // all doors ware closed
