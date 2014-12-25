@@ -68,7 +68,9 @@ void keyDown(KeyboardEvent event) {
       event.preventDefault();
       break;
   }
-  if (playerX == maze.cols-1 && playerY == maze.rows-1) {
-    querySelector('#player').classes.toggle("happy");
+  if (playerX == maze.cols - 1 && playerY == maze.rows - 1) {
+    querySelector('#player').classes.add("happy");
+  } else {
+    querySelector('#player').classes.remove("happy");
   }
 }
