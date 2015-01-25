@@ -242,11 +242,6 @@ class Maze {
     return getValue(room.x, room.y) & direction == 0;
   }
 
-  bool isRoomOpenXY(int x, int y, int direction) {
-    // set direction bit mean door closed
-    return _data[_xy(x, y)] & direction == 0;
-  }
-
   void openDoor(Room room, int direction, int owner) {
     int oldVal = getValue(room.x, room.y);
     if (oldVal == Dir.allAsBitmap) { // all doors ware closed
@@ -296,7 +291,7 @@ class Maze {
     // find path to correct end
     path = findPath(start, ends);
     // remember correct end
-    end = path[path.length - 1];
+//    end = path[path.length - 1]; // TODO: fix broken path!
 
     return new MazeStats(bridges[0].length, bridge.length, bridges.last.length, bridges.length, bridge);
   }
@@ -315,6 +310,7 @@ class Maze {
       diggers[0].digg(maxSteps);
       diggers[1].digg(maxSteps);
     }
+    print(this.end);
     return _bridge(difficulty);
   }
 
@@ -335,7 +331,7 @@ class Maze {
         path.addLast(current);
         while (current != from) {
           current = current.on(parentDir[_xy(current.x, current.y)]);
-          path.addFirst(current);
+          path.addLast(current);
         }
         return path;
       }

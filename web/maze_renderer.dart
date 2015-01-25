@@ -51,22 +51,42 @@ class MazeRenderer {
 
   MazeRenderer(this.canvas) {
     ctx = canvas.context2D;
-//    player_type = PLAYER_CAT;
-//    player_type = PLAYER_DOG;
-//    player_type = PLAYER_MOUSE;
-    player_type = PLAYER_MONEKY;
+    player_type = PLAYER_DOG;
     canvasOffset = canvas.offset;
   }
 
-  renderMaze(Maze maze) {
+  Room pixel2Room(Point<int> canvasPixel) {
+    return new Room((canvasPixel.x - margin) ~/ size, (canvasPixel.y - margin) ~/ size);
+  }
+  
+  void setPet(int petId) {
+    player_type = petId;
+    _setPosXNow(player, -player_type * size);
+    _setPosXNow(goal, -player_type * size);
+  }
+  
+  /** set sprite without transition */
+  void _setPosXNow(Element el, int px) {
+    var tmp = el.style.transition;
+    el.style.transition = "0ms";
+    el.style.backgroundPositionX = "${px}px";
+    var transitionHack = el.offsetLeft;  // needed pause to avoid transition
+    el.style.transition = tmp;
+  }
+
+  renderMaze(Maze maze, [resizeCanvas=true]) {
     if (!img.complete) {
       throw "Cannot render maze. Sprites not loaded.";
+    }
+    if (resizeCanvas) {
+      canvas.width = 2 * margin + maze.cols * size;
+      canvas.height = 2 * margin + maze.rows * size;
     }
     ctx.save();
     ctx.fillStyle = "#333";
     ctx.translate(margin, margin);
-    ctx.fillRect(-margin, -margin , maze.cols * size + 2*margin, maze.rows * size+2*margin);
-    ctx.rect(-margin, -margin , maze.cols * size + 2*margin, maze.rows * size+2*margin);
+    ctx.fillRect(-margin, -margin, maze.cols * size + 2 * margin, maze.rows * size + 2 * margin);
+    ctx.rect(-margin, -margin, maze.cols * size + 2 * margin, maze.rows * size + 2 * margin);
     ctx.clip();
     Point sprite;
     for (int y = 0; y < maze.rows; y++) {
@@ -76,39 +96,39 @@ class MazeRenderer {
         ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, x * size, y * size, size, size);
       }
     }
-    sprite = sprites[ Dir.UP | Dir.DOWN ];
+    sprite = sprites[Dir.UP | Dir.DOWN];
     for (int x = 0; x < maze.cols; x++) {
       ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, x * size, -1 * size, size, size);
       ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, x * size, maze.rows * size, size, size);
     }
-    sprite = sprites[ Dir.RIGHT | Dir.LEFT ];
+    sprite = sprites[Dir.RIGHT | Dir.LEFT];
     for (int y = 0; y < maze.rows; y++) {
       ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, -1 * size, y * size, size, size);
       ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, maze.cols * size, y * size, size, size);
     }
-    sprite = sprites[ Dir.UP | Dir.LEFT ];
+    sprite = sprites[Dir.UP | Dir.LEFT];
     ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, -1 * size, -1 * size, size, size);
-    sprite = sprites[ Dir.UP | Dir.RIGHT ];
+    sprite = sprites[Dir.UP | Dir.RIGHT];
     ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, maze.cols * size, -1 * size, size, size);
-    sprite = sprites[ Dir.DOWN | Dir.LEFT ];
+    sprite = sprites[Dir.DOWN | Dir.LEFT];
     ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, -1 * size, maze.rows * size, size, size);
-    sprite = sprites[ Dir.DOWN | Dir.RIGHT ];
+    sprite = sprites[Dir.DOWN | Dir.RIGHT];
     ctx.drawImageScaledFromSource(img, sprite.x, sprite.y, size, size, maze.cols * size, maze.rows * size, size, size);
     ctx.restore();
   }
 
-  void renderPlayer(int x, int y) {
+  void renderPlayer(Room room) {
     //ctx.drawImageScaledFromSource(img, player_type * size, PLAYER_Y * size, size, size, x * size, y * size, size, size);
     player.style.display = "inline-block";
-    player.style.left = "${canvasOffset.left + margin + x * size}px";
-    player.style.top = "${canvasOffset.top + margin + y * size}px";
+    player.style.left = "${canvasOffset.left + margin + room.x * size}px";
+    player.style.top = "${canvasOffset.top + margin + room.y * size}px";
   }
 
-  void renderGoal(int x, int y) {
+  void renderGoal(Room room) {
     //ctx.drawImageScaledFromSource(img, player_type * size, GOAL_Y * size, size, size, x * size, y * size, size, size);
     goal.style.display = "inline-block";
-    goal.style.left = "${canvasOffset.left + margin + x * size}px";
-    goal.style.top = "${canvasOffset.top + margin + y * size}px";
+    goal.style.left = "${canvasOffset.left + margin + room.x * size}px";
+    goal.style.top = "${canvasOffset.top + margin + room.y * size}px";
   }
 
   Future loadSprites(String spriteUrl, int size) {
