@@ -7,20 +7,13 @@ Maze maze;
 MazeRenderer renderer;
 CanvasElement canvas;
 Room player;
-//int playerX;
-//int playerY;
-List<int> pets = [MazeRenderer.PLAYER_CAT, MazeRenderer.PLAYER_DOG, MazeRenderer.PLAYER_MONEKY, MazeRenderer.PLAYER_MOUSE];
-int pet = 0;
+int petId = 0;
 
 void main() {
-  maze = new Maze(8, 6);
+  maze = new Maze(9, 7);
   canvas = querySelector("#maze canvas");
-  Element newGame = querySelector("#newGame");
   renderer = new MazeRenderer(canvas);
   renderer.loadSprites("images/maze/sprites64.png", 64).then((_) {
-    newGame.onClick.listen((_) {
-      newGameClick();
-    });
     newGameClick();
     canvas.onKeyDown.listen(keyDown);
     canvas.onMouseMove.listen(mouseMove);
@@ -33,8 +26,8 @@ void newGameClick() {
   print(stats);
   player = new Room(maze.start.x, maze.start.y);
   canvas.height = canvas.height;
-  pet = (++pet) % pets.length;
-  renderer.setPet(pets[pet]);
+  petId = (++petId) % MazeRenderer.pets.length;
+  renderer.setPet(petId);
   renderer.renderMaze(maze);
   renderer.renderPlayer(player);
   renderer.renderGoal(maze.end);
@@ -69,6 +62,14 @@ void keyDown(KeyboardEvent event) {
       }
       event.preventDefault();
       break;
+    case 32: // space
+      newGameClick();
+      event.preventDefault();
+      break;
+  }
+  // for keys 0..9 set petId 0..9
+  if (event.keyCode >= 48 && event.keyCode <= 57) {
+    renderer.setPet(event.keyCode - 48);
   }
 }
 

@@ -6,25 +6,16 @@ import 'dart:async';
 
 import 'maze.dart';
 
-// not used yet
 class Sprite {
-  int sheetX; // on sprite sheet, to me multipied by size
-  int sheetY; // on sprite sheet, to me multipied by size
-  int size; // sprite width and height
-  int x; // on board, in rooms, not pixels
-  int y; // on board, in rooms, not pixels
-  ImageElement image;
-  Sprite(String spriteUrl, this.sheetX, this.sheetY, this.size) {
-    image = new ImageElement(src: spriteUrl);
-    image.style.display = "none";
-    image.style.position = "absolute";
-    image.style.width = "${size}px";
-    image.style.height = "${size}px";
-    image.onLoad.first.then((e) {
-      image.style.left = "${sheetX * size}px";
-      image.style.top = "${sheetY * size}px";
-    });
-  }
+  int x;
+  int y;
+  String name;
+  Sprite(this.x, this.y, [this.name]);
+}
+
+class Pet extends Sprite {
+  Sprite food;
+  Pet(int x, int y, String name, this.food) : super(x, y, name) ;
 }
 
 class MazeRenderer {
@@ -38,20 +29,39 @@ class MazeRenderer {
   // where particular maze sprite is locaten on the sprite sheet
   static const List<int> _spriteX = const [2, 2, 3, 3, 2, 2, 3, 3, 1, 1, 0, 0, 1, 1, 0, 0];
   static const List<int> _spriteY = const [2, 1, 2, 1, 3, 0, 3, 0, 2, 1, 2, 1, 3, 0, 3, 0];
-  // coordinated on sprite sheet
-  static const int PLAYER_CAT = 0;
-  static const int PLAYER_DOG = 1;
-  static const int PLAYER_MOUSE = 2;
-  static const int PLAYER_MONEKY = 3;
-  int player_type;
-  static const int PLAYER_Y = 4;
-  static const int GOAL_Y = 5;
   Element player;
   Element goal;
+  static List<Pet> pets = buildPets();
+  Pet pet;
+
+  static List<Pet> buildPets() {
+    return [
+            new Pet(0, 4, 'cat',
+                new Sprite(0,5, 'bowl')),
+            new Pet(1, 4, 'dog',
+                new Sprite(1,5, 'bone')),
+            new Pet(2, 4, 'mouse',
+                new Sprite(2,5, 'cheese')),
+            new Pet(3, 4, 'monkey',
+                new Sprite(3,5, 'banana')),
+            new Pet(0, 6, 'goat',
+                new Sprite(0,7, 'grass')),
+            new Pet(1, 6, 'penguin',
+                new Sprite(1,7, 'fish')),
+            new Pet(2, 6, 'giraffe',
+                new Sprite(2,7, 'grass')),
+            new Pet(3, 6, 'elephant',
+                new Sprite(3,7, 'banana')),
+            new Pet(1, 7, 'fish',
+                new Sprite(0,7, 'grass')),
+            new Pet(0, 4, 'cat',
+                new Sprite(2,4, 'mouse')),
+    ];
+  }
 
   MazeRenderer(this.canvas) {
     ctx = canvas.context2D;
-    player_type = PLAYER_DOG;
+    pet = pets[0];
     canvasOffset = canvas.offset;
   }
 
@@ -60,16 +70,18 @@ class MazeRenderer {
   }
   
   void setPet(int petId) {
-    player_type = petId;
-    _setPosXNow(player, -player_type * size);
-    _setPosXNow(goal, -player_type * size);
+    pet = pets[petId];
+    print('set pet to ${pet.name}, x=${pet.x}, y=${pet.y}');
+    _setPosNow(player, -pet.x * size, -pet.y * size);
+    _setPosNow(goal, -pet.food.x * size, -pet.food.y * size);
   }
   
   /** set sprite without transition */
-  void _setPosXNow(Element el, int px) {
+  void _setPosNow(Element el, int px, int py) {
     var tmp = el.style.transition;
     el.style.transition = "0ms";
     el.style.backgroundPositionX = "${px}px";
+    el.style.backgroundPositionY = "${py}px";
     var transitionHack = el.offsetLeft;  // needed pause to avoid transition
     el.style.transition = tmp;
   }
@@ -81,6 +93,7 @@ class MazeRenderer {
     if (resizeCanvas) {
       canvas.width = 2 * margin + maze.cols * size;
       canvas.height = 2 * margin + maze.rows * size;
+      canvasOffset = canvas.offset;
     }
     ctx.save();
     ctx.fillStyle = "#333";
@@ -144,16 +157,16 @@ class MazeRenderer {
       player.style.width = "${size}px";
       player.style.height = "${size}px";
       player.style.position = "absolute";
-      player.style.backgroundPositionX = "${-player_type * size}px";
-      player.style.backgroundPositionY = "${-PLAYER_Y * size}px";
+      player.style.backgroundPositionX = "${-pet.x * size}px";
+      player.style.backgroundPositionY = "${-pet.y * size}px";
       player.style.transition = "150ms";
       goal = querySelector("#maze #goal");
       goal.style.backgroundImage = "url(${spriteUrl})";
       goal.style.width = "${size}px";
       goal.style.height = "${size}px";
       goal.style.position = "absolute";
-      goal.style.backgroundPositionX = "${-player_type * size}px";
-      goal.style.backgroundPositionY = "${-GOAL_Y * size}px";
+      goal.style.backgroundPositionX = "${-pet.food.x * size}px";
+      goal.style.backgroundPositionY = "${-pet.food.y * size}px";
       goal.style.transition = "150ms";
     });
     img.src = spriteUrl;
