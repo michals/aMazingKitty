@@ -66,7 +66,9 @@ class MazeRenderer {
   }
 
   Room pixel2Room(Point<int> canvasPixel) {
-    return new Room((canvasPixel.x - margin) ~/ size, (canvasPixel.y - margin) ~/ size);
+    return new Room(
+        (canvasPixel.x - margin - canvasOffset.left) ~/ size,
+        (canvasPixel.y - margin - canvasOffset.top) ~/ size);
   }
   
   void setPet(int petId) {

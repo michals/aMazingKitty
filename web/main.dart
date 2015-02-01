@@ -17,6 +17,8 @@ void main() {
     newGameClick();
     canvas.onKeyDown.listen(keyDown);
     canvas.onMouseMove.listen(mouseMove);
+    canvas.onTouchMove.listen(onTouch);
+    canvas.onTouchStart.listen(onTouch);
   });
 }
 
@@ -84,9 +86,19 @@ void moveTo(Room room) {
 }
 
 void mouseMove(MouseEvent event) {
-  Room here = renderer.pixel2Room(event.layer);
-  if (here.distanceTo(player)==1) {
-//    print(here);
+  tryMove(event.page);
+}
+
+void onTouch(TouchEvent event) {
+  tryMove(event.changedTouches.first.page);
+}
+
+void tryMove(Point pagePoint) {
+  Room here = renderer.pixel2Room(pagePoint);
+  int dir = player.directionTo(here);
+  if (here.distanceTo(player) == 1
+      && dir != Dir.NONE
+      && maze.isRoomOpen(player, dir)) {
     moveTo(here);
   }
 }

@@ -14,6 +14,7 @@ class _Rnd {
 
 // Direction
 class Dir {
+  static const int NONE = 0;
   static const int UP = 1;
   static const int RIGHT = 2;
   static const int DOWN = 4;
@@ -61,6 +62,21 @@ class Room extends Point {
         return new Room(x - 1, y);
     }
     throw "incorrect direction";
+  }
+
+  // what direction to go to get closer to otherRoom
+  int directionTo(Room otherRoom) {
+    var dx = otherRoom.x - this.x,
+        dy = otherRoom.y - this.y,
+        ret = 0;
+    if (dx == 0 && dy == 0) {
+      return Dir.NONE;
+    }
+    if (dx*dx > dy*dy) {
+      return (dx > 0) ? Dir.RIGHT : Dir.LEFT;
+    } else {
+      return (dy > 0) ? Dir.DOWN : Dir.UP;
+    }
   }
 }
 
