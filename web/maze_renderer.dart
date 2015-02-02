@@ -20,7 +20,7 @@ class Pet extends Sprite {
 
 class MazeRenderer {
   CanvasElement canvas;
-  Rectangle canvasOffset;
+//  Rectangle canvasOffset;
   CanvasRenderingContext2D ctx;
   ImageElement img;
   int size;
@@ -62,10 +62,10 @@ class MazeRenderer {
   MazeRenderer(this.canvas) {
     ctx = canvas.context2D;
     pet = pets[0];
-    canvasOffset = canvas.offset;
   }
 
   Room pixel2Room(Point<int> canvasPixel) {
+    var canvasOffset = canvas.offset;
     return new Room(
         (canvasPixel.x - margin - canvasOffset.left) ~/ size,
         (canvasPixel.y - margin - canvasOffset.top) ~/ size);
@@ -95,7 +95,6 @@ class MazeRenderer {
     if (resizeCanvas) {
       canvas.width = 2 * margin + maze.cols * size;
       canvas.height = 2 * margin + maze.rows * size;
-      canvasOffset = canvas.offset;
     }
     ctx.save();
     ctx.fillStyle = "#333";
@@ -135,6 +134,7 @@ class MazeRenderer {
   void renderPlayer(Room room) {
     //ctx.drawImageScaledFromSource(img, player_type * size, PLAYER_Y * size, size, size, x * size, y * size, size, size);
     player.style.display = "inline-block";
+    var canvasOffset = canvas.offset;
     player.style.left = "${canvasOffset.left + margin + room.x * size}px";
     player.style.top = "${canvasOffset.top + margin + room.y * size}px";
   }
@@ -142,6 +142,7 @@ class MazeRenderer {
   void renderGoal(Room room) {
     //ctx.drawImageScaledFromSource(img, player_type * size, GOAL_Y * size, size, size, x * size, y * size, size, size);
     goal.style.display = "inline-block";
+    var canvasOffset = canvas.offset;
     goal.style.left = "${canvasOffset.left + margin + room.x * size}px";
     goal.style.top = "${canvasOffset.top + margin + room.y * size}px";
   }
@@ -159,16 +160,14 @@ class MazeRenderer {
       player.style.width = "${size}px";
       player.style.height = "${size}px";
       player.style.position = "absolute";
-      player.style.backgroundPositionX = "${-pet.x * size}px";
-      player.style.backgroundPositionY = "${-pet.y * size}px";
+      player.style.backgroundPosition = "${-pet.x * size}px ${-pet.y * size}px";
       player.style.transition = "150ms";
       goal = querySelector("#maze #goal");
       goal.style.backgroundImage = "url(${spriteUrl})";
       goal.style.width = "${size}px";
       goal.style.height = "${size}px";
       goal.style.position = "absolute";
-      goal.style.backgroundPositionX = "${-pet.food.x * size}px";
-      goal.style.backgroundPositionY = "${-pet.food.y * size}px";
+      goal.style.backgroundPosition = "${-pet.food.x * size}px ${-pet.food.y * size}px";
       goal.style.transition = "150ms";
     });
     img.src = spriteUrl;

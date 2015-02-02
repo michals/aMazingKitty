@@ -19,6 +19,7 @@ void main() {
     canvas.onMouseMove.listen(mouseMove);
     canvas.onTouchMove.listen(onTouch);
     canvas.onTouchStart.listen(onTouch);
+    window.onResize.listen(onResize);
   });
 }
 
@@ -101,4 +102,10 @@ void tryMove(Point pagePoint) {
       && maze.isRoomOpen(player, dir)) {
     moveTo(here);
   }
+}
+
+
+void onResize(Event event) {
+  renderer.renderPlayer(player);
+  renderer.renderGoal(maze.end);
 }
